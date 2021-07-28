@@ -15,18 +15,18 @@ pipeline {
             }
             post {
                 success {
-                    echo '\033[32mJava JAR created\033[0m'
-                    
                     archiveArtifacts artifacts: 'build/libs/*.jar'
                     echo '\033[32mArtifact attached \033[0m'
+
+                    sh 'docker-compose build'
+                    echo '\033[32m Docker compose build \033[0m'
                 }
             }
         }
         stage('Deploy') {
             steps {
-                withGradle {
-                    sh './gradlew bootRun'
-                }
+                echo '\033[32m Docker Image started \033[0m'
+                sh 'docker-compose up -d'
             }
         }
     }
