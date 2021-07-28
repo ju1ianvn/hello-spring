@@ -14,6 +14,18 @@ class HelloSpringApplication {
         SpringApplication.run(HelloSpringApplication, args)
     }
 
+    @GetMapping("/")
+    String home() {
+        return "<html>" +
+                    "<head>" +
+                        "<title>ju1ianvn</title>" +
+                    "</head>" +
+                    "<body>" +
+                        "<h1>ju1ianvn</h1><br><h2>Devops</h2>" +
+                    "</body>" +
+                "</html>";
+    }
+
     @GetMapping("/hello")
     String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
         return String.format("Hello %s!", name)
