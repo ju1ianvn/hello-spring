@@ -1,0 +1,8 @@
+version: "3.0"
+
+services:
+  web:
+    image: hello-spring:latest
+    build: .
+    ports:
+      - "8081:8081"
