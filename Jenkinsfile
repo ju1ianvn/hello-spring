@@ -29,6 +29,14 @@ pipeline {
                 sh 'docker-compose up -d'
             }
         }
+
+        stage('gitlab') {
+            steps {
+                echo 'Notify GitLab'
+                updateGitlabCommitStatus name: 'build', state: 'pending'
+                updateGitlabCommitStatus name: 'build', state: 'success'
+            }
+        }
     }
 }
 
