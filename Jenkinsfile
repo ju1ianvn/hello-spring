@@ -9,6 +9,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo '\033[32mCreating Java JAR...\033[0m'
+                updateGitlabCommitStatus name: 'build', state: 'pending'
                 withGradle {
                     sh './gradlew assemble'
                 }
@@ -20,6 +21,7 @@ pipeline {
 
                     sh 'docker-compose build'
                     echo '\033[32m Docker compose build \033[0m'
+                    updateGitlabCommitStatus name: 'build', state: 'success'
                 }
             }
         }
@@ -27,14 +29,6 @@ pipeline {
             steps {
                 echo '\033[32m Docker Image started \033[0m'
                 sh 'docker-compose up -d'
-            }
-        }
-
-        stage('gitlab') {
-            steps {
-                echo 'Notify GitLab'
-                updateGitlabCommitStatus name: 'build', state: 'pending'
-                updateGitlabCommitStatus name: 'build', state: 'success'
             }
         }
     }
