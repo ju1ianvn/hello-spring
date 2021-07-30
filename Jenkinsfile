@@ -6,10 +6,6 @@ pipeline {
     }
 
     stages {
-        stage ("Checkout") {
-            scmInfo = checkout scm
-        }
-
         stage('Build') {
             steps {
                 echo '\033[32mCreating Java JAR...\033[0m'
