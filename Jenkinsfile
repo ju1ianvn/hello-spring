@@ -6,6 +6,19 @@ pipeline {
     }
 
     stages {
+        stage('Test') {
+            steps {
+                echo '\033[32mExecuting Gradle Tests\033[0m'
+                withGradle {
+                    sh './gradlew test'
+                }
+            }
+            post {
+                success {
+                    junit 'build/test-results/test/*.xml'
+                }
+            }
+        }
         stage('Build') {
             steps {
                 echo '\033[32mCreating Java JAR...\033[0m'
@@ -26,7 +39,7 @@ pipeline {
                     echo '\033[32mTag branch\033[0m'
                     sshagent (credentials: ['deploy-master']) {
                         sh 'git tag MASTER-1.0.1-${BUILD_NUMBER}'
-                        sh 'git push MASTER-1.0.1-${BUILD_NUMBER}'
+                        sh 'git push origin MASTER-1.0.1-${BUILD_NUMBER}'
                     }
                 }
             }
@@ -45,4 +58,3 @@ pipeline {
          }
     }
 }
-
