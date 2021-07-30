@@ -17,15 +17,16 @@ pipeline {
             post {
                 success {
                     archiveArtifacts artifacts: 'build/libs/hello-spring-0.0.1-SNAPSHOT.jar'
-                    echo '\033[32mArtifact attached \033[0m'
+                    echo '\033[32mArtifact attached\033[0m'
 
                     sh 'docker-compose build'
-                    echo '\033[32m Docker compose build \033[0m'
+                    echo '\033[32mDocker compose build \033[0m'
                     updateGitlabCommitStatus name: 'build', state: 'success'
 
+                    echo '\033[32mTag branch\033[0m'
                     sshagent (credentials: ['deploy-master']) {
-                        sh 'git tag MASTER-1.0.1-${BUILD_NUMBER} ${GIT_COMMIT}'
-                        sh 'git push ${GIT_REMOTE} MASTER-1.0.1-${BUILD_NUMBER}
+                        sh 'git tag MASTER-1.0.1-${BUILD_NUMBER}'
+                        sh 'git push MASTER-1.0.1-${BUILD_NUMBER}'
                     }
                 }
             }
