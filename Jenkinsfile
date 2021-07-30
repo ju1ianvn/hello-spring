@@ -24,7 +24,7 @@ pipeline {
                     updateGitlabCommitStatus name: 'build', state: 'success'
 
                     sshagent (credentials: ['deploy-master']) {
-                        sh 'ssh git tag ${scmInfo.GIT_BRANCH}-1.0.1-${scmInfo.GIT_COMMIT}'
+                        sh 'ssh git tag MASTER-1.0.1'
                     }
                 }
             }
