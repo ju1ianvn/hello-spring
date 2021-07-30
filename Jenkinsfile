@@ -7,6 +7,9 @@ pipeline {
 
     stages {
         stage('Build') {
+            withCheckout(scm) {
+                echo "GIT_COMMIT is ${env.GIT_COMMIT}"
+            }
             steps {
                 echo '\033[32mCreating Java JAR...\033[0m'
                 updateGitlabCommitStatus name: 'build', state: 'pending'
@@ -24,7 +27,7 @@ pipeline {
                     updateGitlabCommitStatus name: 'build', state: 'success'
 
                     sshagent (credentials: ['deploy-master']) {
-                        sh 'ssh git tag MASTER-1.0.1'
+                        sh 'ssh git tag ${env.GIT_BRANCH}-1.0.1 ${env.GIT_COMMIT}'
                     }
                 }
             }
