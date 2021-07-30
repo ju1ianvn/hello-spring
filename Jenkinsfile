@@ -7,10 +7,12 @@ pipeline {
 
     stages {
         stage('Build') {
-            withCheckout(scm) {
-                echo "GIT_COMMIT is ${env.GIT_COMMIT}"
-            }
+
             steps {
+                withCheckout(scm) {
+                    echo "GIT_COMMIT is ${env.GIT_COMMIT}"
+                }
+
                 echo '\033[32mCreating Java JAR...\033[0m'
                 updateGitlabCommitStatus name: 'build', state: 'pending'
                 withGradle {
