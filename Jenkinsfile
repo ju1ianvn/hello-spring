@@ -7,7 +7,6 @@ pipeline {
 
     stages {
         stage('Build') {
-
             steps {
                 echo '\033[32mCreating Java JAR...\033[0m'
                 updateGitlabCommitStatus name: 'build', state: 'pending'
@@ -36,6 +35,12 @@ pipeline {
                 sh 'docker-compose up -d'
             }
         }
+    }
+    post {
+         // Clean after build
+         always {
+             deleteDir()
+         }
     }
 }
 
