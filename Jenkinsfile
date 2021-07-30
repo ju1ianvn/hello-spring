@@ -25,7 +25,7 @@ pipeline {
 
                     sshagent (credentials: ['deploy-master']) {
                         sh 'git tag MASTER-1.0.1-${BUILD_NUMBER} ${GIT_COMMIT}'
-                        sh 'git push --tags'
+                        sh 'git push ${GIT_REMOTE} MASTER-1.0.1-${BUILD_NUMBER}
                     }
                 }
             }
