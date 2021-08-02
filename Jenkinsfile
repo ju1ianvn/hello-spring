@@ -10,12 +10,12 @@ pipeline {
             steps {
                 echo '\033[32mExecuting Gradle Tests\033[0m'
                 withGradle {
-                    sh './gradlew test'
+                    sh './gradlew clean test'
                 }
             }
             post {
                 success {
-                    junit 'build/test-results/test/*.xml'
+                    junit 'build/test-results/test/TEST-*.xml'
                 }
             }
         }
