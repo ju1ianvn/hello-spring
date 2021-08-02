@@ -6,19 +6,6 @@ pipeline {
     }
 
     stages {
-        stage('Test') {
-            steps {
-                echo '\033[32mExecuting Gradle Tests\033[0m'
-                withGradle {
-                    sh './gradlew clean test'
-                }
-            }
-            post {
-                success {
-                    junit 'build/test-results/test/TEST-*.xml'
-                }
-            }
-        }
         stage('Build') {
             steps {
                 echo '\033[32mCreating Java JAR...\033[0m'
@@ -41,6 +28,19 @@ pipeline {
                         sh 'git tag MASTER-1.0.1-${BUILD_NUMBER}'
                         sh 'git push origin MASTER-1.0.1-${BUILD_NUMBER}'
                     }
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                echo '\033[32mExecuting Gradle Tests\033[0m'
+                withGradle {
+                    sh './gradlew clean test'
+                }
+            }
+            post {
+                always {
+                    junit 'build/test-results/test/TEST-*.xml'
                 }
             }
         }
