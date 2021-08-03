@@ -64,13 +64,12 @@ pipeline {
                 }
             }
         }
-
         stage('Security') {
             steps {
                 sh 'trivy image -format=json --output=trivy-analysis.json hello-spring:latest'
                 recordIssues (
                     tools: [
-                        pmdParser(pattern: 'trivy-analysis.json')
+                        trivy(pattern: 'trivy-analysis.json')
                     ]
                 )
             }
