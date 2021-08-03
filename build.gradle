@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'groovy'
     id 'jacoco'
+    id 'pmd'
 }
 
 group = 'com.example'

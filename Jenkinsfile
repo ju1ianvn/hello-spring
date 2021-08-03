@@ -6,6 +6,29 @@ pipeline {
     }
 
     stages {
+        stage('Test') {
+            steps {
+                echo '\033[32mExecuting Gradle Tests\033[0m'
+                withGradle {
+                    sh './gradlew clean test'
+                }
+            }
+        }
+        stage ('Analysis') {
+            steps {
+                echo '\033[32mExecuting Gradle Analysis\033[0m'
+                withGradle {
+                    sh './gradlew check'
+                }
+            }
+            post {
+                always {
+                    recordIssues {
+                        pmdParser(pattern: 'build/reports/pmd/*.xml')
+                    }
+                }
+            }
+        }
         stage('Build') {
             steps {
                 echo '\033[32mCreating Java JAR...\033[0m'
@@ -16,8 +39,8 @@ pipeline {
             }
             post {
                 success {
+                    echo '\033[32mAttaching Artifact\033[0m'
                     archiveArtifacts artifacts: 'build/libs/hello-spring-0.0.1-SNAPSHOT.jar'
-                    echo '\033[32mArtifact attached\033[0m'
 
                     sh 'docker-compose build'
                     echo '\033[32mDocker compose build \033[0m'
@@ -31,24 +54,16 @@ pipeline {
                 }
             }
         }
-        stage('Test') {
-            steps {
-                echo '\033[32mExecuting Gradle Tests\033[0m'
-                withGradle {
-                    sh './gradlew clean test'
-                }
-            }
-            post {
-                always {
-                    junit 'build/test-results/test/TEST-*.xml'
-                    jacoco execPattern:  'build/jacoco/*.exec'
-                }
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo '\033[32m Docker Image started \033[0m'
-                sh 'docker-compose up -d'
+        // stage('Deploy') {
+        //     steps {
+        //         echo '\033[32m Docker Image started \033[0m'
+        //         sh 'docker-compose up -d'
+        //     }
+        // }
+        post {
+            always {
+                junit 'build/test-results/test/TEST-*.xml'
+                jacoco execPattern:  'build/jacoco/*.exec'
             }
         }
     }
