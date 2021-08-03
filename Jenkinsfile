@@ -1,3 +1,4 @@
+#!/usr/bin/env groovy
 pipeline {
     agent any
 
@@ -13,8 +14,14 @@ pipeline {
                     sh './gradlew clean test'
                 }
             }
+            post {
+                always {
+                    junit 'build/test-results/test/TEST-*.xml'
+                    jacoco execPattern: 'build/jacoco/*.exec'
+                }
+            }
         }
-        stage ('Analysis') {
+        stage('Analysis') {
             steps {
                 echo '\033[32mExecuting Gradle Analysis\033[0m'
                 withGradle {
@@ -23,11 +30,11 @@ pipeline {
             }
             post {
                 always {
-                    recordIssues {
+                    recordIssues (
                         tools: [
                             pmdParser(pattern: 'build/reports/pmd/*.xml')
                         ]
-                    }
+                    )
                 }
             }
         }
@@ -49,7 +56,7 @@ pipeline {
                     updateGitlabCommitStatus name: 'build', state: 'success'
 
                     echo '\033[32mTag branch\033[0m'
-                    sshagent (credentials: ['deploy-master']) {
+                    sshagent(credentials: ['deploy-master']) {
                         sh 'git tag MASTER-1.0.1-${BUILD_NUMBER}'
                         sh 'git push origin MASTER-1.0.1-${BUILD_NUMBER}'
                     }
@@ -62,16 +69,10 @@ pipeline {
         //         sh 'docker-compose up -d'
         //     }
         // }
-        post {
-            always {
-                junit 'build/test-results/test/TEST-*.xml'
-                jacoco execPattern:  'build/jacoco/*.exec'
-            }
-        }
     }
     post {
-         always {
-             deleteDir()
-         }
+        always {
+            deleteDir()
+        }
     }
 }
