@@ -34,3 +34,7 @@ jacocoTestReport {
         html.required = false
     }
 }
+
+spotbugs {
+    ignoreFailures = true
+}
