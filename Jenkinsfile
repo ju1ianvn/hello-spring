@@ -67,10 +67,10 @@ pipeline {
 
         stage('Security') {
             steps {
-                def result = sh 'trivy image hello-spring:latest'
+                sh 'trivy image -format=json --output=/build/report/trivy/analysis.json hello-spring:latest'
                 recordIssues (
                     tools: [
-                        pmdParser(pattern: ${result})
+                        pmdParser(pattern: '/build/report/trivy/*.json')
                     ]
                 )
             }
