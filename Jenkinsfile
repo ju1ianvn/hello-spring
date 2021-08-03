@@ -33,7 +33,7 @@ pipeline {
                     recordIssues (
                         tools: [
                             pmdParser(pattern: 'build/reports/pmd/*.xml'),
-                            spotBugs(pattern: 'build/reports/spotbugs/*.xml')
+                            spotBugs(pattern: 'build/reports/spotbugs/*.xml', useRankAsPriority: true)
                         ]
                     )
                 }
@@ -62,6 +62,17 @@ pipeline {
                         sh 'git push origin MASTER-1.0.1-${BUILD_NUMBER}'
                     }
                 }
+            }
+        }
+
+        stage('Security') {
+            steps {
+                def result = sh 'trivy image hello-spring:latest'
+                recordIssues (
+                    tools: [
+                        pmdParser(pattern: ${result})
+                    ]
+                )
             }
         }
         // stage('Deploy') {
