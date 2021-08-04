@@ -11,27 +11,19 @@ pipeline {
             steps {
                 echo '\033[32mExecuting Gradle Tests\033[0m'
                 withGradle {
-                    sh './gradlew clean test'
+                    sh './gradlew clean test pitest'
                 }
             }
             post {
                 always {
                     junit 'build/test-results/test/TEST-*.xml'
                     jacoco execPattern: 'build/jacoco/*.exec'
+                    recordIssues (
+                        tools: [
+                            pit(pattern: 'build/reports/pitest/**/*.xml')
+                        ]
+                    )
                 }
-            }
-        }
-        stage('PiTest Analysis') {
-            steps {
-                echo '\033[32mExecuting PiTest Analysis\033[0m'
-                withGradle {
-                    sh './gradlew pitest'
-                }
-                recordIssues (
-                    tools: [
-                        pit(pattern: 'build/reports/pitest/mutations.xml')
-                    ]
-                )
             }
         }
         stage('SonarQube Analysis') {
