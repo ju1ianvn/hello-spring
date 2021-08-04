@@ -21,7 +21,12 @@ pipeline {
                 }
             }
         }
-        stage('Analysis') {
+        stage('SonarQube Analysis') {
+            withSonarQubeEnv() {
+                sh "./gradlew sonarqube"
+            }
+        }
+        stage('Gradle Analysis') {
             steps {
                 echo '\033[32mExecuting Gradle Analysis\033[0m'
                 withGradle {
