@@ -12,10 +12,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HomeControllerTest {
 
     @LocalServerPort
-    private int port;
+    private transient int port;
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private transient TestRestTemplate restTemplate;
 
     @Test
     void homeController() {
