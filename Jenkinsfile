@@ -27,7 +27,7 @@ pipeline {
             }
         }
         stage('SonarQube Analysis') {
-            when {}
+            when { expression { false } }
             steps {
                 echo '\033[32mExecuting SonarQube Analysis\033[0m'
                 withSonarQubeEnv('SonarQube Local') {
