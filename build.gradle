@@ -6,6 +6,7 @@ plugins {
     id 'pmd'
     id "com.github.spotbugs" version "4.7.2"
     id "org.sonarqube" version "3.3"
+    id "info.solidsoft.pitest" version "1.5.1"
 }
 
 group = 'com.example'
@@ -40,8 +41,18 @@ spotbugs {
     ignoreFailures = true
 }
 
+pmd {
+    ignoreFailures = true
+}
+
 sonarqube {
   properties {
     property "sonar.projectKey", "julian_hello-spring_AXsQCaQIqBbG6_GtfTou"
   }
+}
+
+pitest {
+    junit5PluginVersion = '0.12'
+    outputFormats = ['XML', 'HTML']
+    reportDir = 'build/reports/pitest/mutations.xml'
 }

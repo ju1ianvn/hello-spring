@@ -8,7 +8,6 @@ class HelloSpringApplicationTests {
 
     @Test
     void contextLoads() {
-        assert true;
     }
 
 }
