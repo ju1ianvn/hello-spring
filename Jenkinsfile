@@ -9,27 +9,49 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                echo '\033[32mExecuting Gradle Tests\033[0m'
+                echo '\033[32mExecuting Gradle Test and Clean\033[0m'
                 withGradle {
-                    sh './gradlew clean test pitest'
+                    sh './gradlew clean'
                 }
             }
-            post {
-                always {
-                    junit 'build/test-results/test/TEST-*.xml'
-                    jacoco execPattern: 'build/jacoco/*.exec'
-                    recordIssues (
-                        tools: [
-                            pit(pattern: 'build/reports/pitest/**/*.xml')
-                        ]
-                    )
+            parallel {
+                stage('Gradle Test') {
+                    steps {
+                        echo '\033[32mExecuting Gradle Test\033[0m'
+                        withGradle {
+                            sh './gradlew test pitest'
+                        }
+                    }
+                    post {
+                        always {
+                            junit 'build/test-results/test/TEST-*.xml'
+                            jacoco execPattern: 'build/jacoco/*.exec'
+                        }
+                    }
+                }
+                stage ('Gradle Pi Test'){
+                    steps {
+                        echo '\033[32mExecuting Pi Test Mutation\033[0m'
+                        withGradle {
+                            sh './gradlew pitest'
+                        }
+                    }
+                    post {
+                        always {
+                            recordIssues (
+                                tools: [
+                                    pit(pattern: 'build/reports/pitest/**/*.xml')
+                                ]
+                            )
+                        }
+                    }
                 }
             }
         }
         stage('Analysis') {
             parallel {
                 stage('SonarQube Analysis') {
-                    when { expression { true } }
+                    when { expression { false } }
                     steps {
                         echo '\033[32mExecuting SonarQube Analysis\033[0m'
                         withSonarQubeEnv('SonarQube Local') {
@@ -57,7 +79,6 @@ pipeline {
                 }
             }
         }
-        
         stage('Build') {
             steps {
                 echo '\033[32mCreating Java JAR...\033[0m'
@@ -93,12 +114,22 @@ pipeline {
                 )
             }
         }
-        // stage('Deploy') {
-        //     steps {
-        //         echo '\033[32m Docker Image started \033[0m'
-        //         sh 'docker-compose up -d'
-        //     }
-        // }
+        stage('Publish Image Docker') {
+            steps {
+                withDockerRegistry(credentialsId: 'gitlab-deploy', url: '10.250.8.6:5050/julian/hello-spring') {
+                    // sh 'docker login 10.250.8.6:5050/julian/hello-spring'
+                    sh 'docker-compose push hello-spring:latest hello-spring:MASTER-1.0.1-${BUILD_NUMBER}'
+                    echo '\033[32m Docker Image Published \033[0m'
+                }
+            }
+        }
+        stage('Deploy') {
+            when { expression { false } }
+            steps {
+                echo '\033[32m Docker Image started \033[0m'
+                sh 'docker-compose up -d'
+            }
+        }
     }
     post {
         always {

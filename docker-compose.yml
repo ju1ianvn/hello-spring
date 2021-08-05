@@ -2,7 +2,7 @@ version: "3.0"
 
 services:
   web:
-    image: hello-spring:latest
+    image: 10.250.8.6:5050/julian/hello-spring/hellospring:latest
     build: .
     ports:
       - "8081:8081"
