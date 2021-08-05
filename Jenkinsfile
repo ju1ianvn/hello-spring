@@ -118,7 +118,7 @@ pipeline {
         }
         stage('Publish Image Docker') {
             steps {
-                withDockerRegistry(credentialsId: 'gitlab-deploy', url: '10.250.8.6:5050/julian/hello-spring') {
+                withDockerRegistry(credentialsId: 'gitlab-deploy', url: 'http://10.250.8.6:5050/julian/hello-spring') {
                     // sh 'docker login 10.250.8.6:5050/julian/hello-spring'
                     sh 'docker-compose push hello-spring:latest hello-spring:MASTER-1.0.1-${BUILD_NUMBER}'
                     echo '\033[32m Docker Image Published \033[0m'
