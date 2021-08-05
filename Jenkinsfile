@@ -26,33 +26,38 @@ pipeline {
                 }
             }
         }
-        stage('SonarQube Analysis') {
-            when { expression { false } }
-            steps {
-                echo '\033[32mExecuting SonarQube Analysis\033[0m'
-                withSonarQubeEnv('SonarQube Local') {
-                    sh "./gradlew sonarqube"
+        stage('Analysis') {
+            parallel {
+                stage('SonarQube Analysis') {
+                    when { expression { true } }
+                    steps {
+                        echo '\033[32mExecuting SonarQube Analysis\033[0m'
+                        withSonarQubeEnv('SonarQube Local') {
+                            sh "./gradlew sonarqube"
+                        }
+                    }
+                }
+                stage('Gradle Analysis') {
+                    steps {
+                        echo '\033[32mExecuting Gradle Analysis\033[0m'
+                        withGradle {
+                            sh './gradlew check'
+                        }
+                    }
+                    post {
+                        always {
+                            recordIssues (
+                                tools: [
+                                    pmdParser(pattern: 'build/reports/pmd/*.xml'),
+                                    spotBugs(pattern: 'build/reports/spotbugs/*.xml', useRankAsPriority: true)
+                                ]
+                            )
+                        }
+                    }
                 }
             }
         }
-        stage('Gradle Analysis') {
-            steps {
-                echo '\033[32mExecuting Gradle Analysis\033[0m'
-                withGradle {
-                    sh './gradlew check'
-                }
-            }
-            post {
-                always {
-                    recordIssues (
-                        tools: [
-                            pmdParser(pattern: 'build/reports/pmd/*.xml'),
-                            spotBugs(pattern: 'build/reports/spotbugs/*.xml', useRankAsPriority: true)
-                        ]
-                    )
-                }
-            }
-        }
+        
         stage('Build') {
             steps {
                 echo '\033[32mCreating Java JAR...\033[0m'
