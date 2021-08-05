@@ -7,13 +7,15 @@ pipeline {
     }
 
     stages {
-        stage('Test') {
+        stage('Clean') {
             steps {
                 echo '\033[32mExecuting Gradle Test and Clean\033[0m'
                 withGradle {
                     sh './gradlew clean'
                 }
             }
+        }
+        stage('Test') {
             parallel {
                 stage('Gradle Test') {
                     steps {
