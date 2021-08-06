@@ -118,11 +118,12 @@ pipeline {
         }
         stage('Publish Image Docker') {
             steps {
+                sh 'docker tag 10.250.8.6:5050/julian/hello-spring/spring-web:latest 10.250.8.6:5050/julian/hello-spring/spring-web:MASTER-1.0.1-${BUILD_NUMBER}'
+                sh 'docker tag 10.250.8.6:5050/julian/hello-spring/spring-web:latest spring-web:MASTER-1.0.1-${BUILD_NUMBER}'
+                sh 'docker tag 10.250.8.6:5050/julian/hello-spring/spring-web:latest spring-web:latest'
+                
                 withDockerRegistry(credentialsId: 'gitlab-deploy', url: 'http://10.250.8.6:5050/julian/hello-spring') {
-                    sh 'docker tag 10.250.8.6:5050/julian/hello-spring/spring-web:latest 10.250.8.6:5050/julian/hello-spring/spring-web:MASTER-1.0.1-${BUILD_NUMBER}'
-                    sh 'docker tag 10.250.8.6:5050/julian/hello-spring/spring-web:latest spring-web:MASTER-1.0.1-${BUILD_NUMBER}'
-                    sh 'docker tag 10.250.8.6:5050/julian/hello-spring/spring-web:latest spring-web:latest'
-                    sh 'docker-compose push'
+                    sh 'docker push 10.250.8.6:5050/julian/hello-spring/spring-web:latest'
                     echo '\033[32m Docker Image Published \033[0m'
                 }
             }
