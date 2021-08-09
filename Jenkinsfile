@@ -131,8 +131,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 sshagent(credentials: ['sshkey-app-user']) {
-                    sh 'cd hello-spring/'
-                    sh 'docker-compose up -d'
+                    sh 'sh -o StrictHostKeyChecking=no -l app@localhost'
+                    sh 'cd hello-spring/ && docker-compose up -d'
                 }
                 echo '\033[32m Docker Image started \033[0m'
             }
